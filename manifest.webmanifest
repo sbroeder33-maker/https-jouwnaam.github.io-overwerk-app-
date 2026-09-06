@@ -1,0 +1,9 @@
+{
+  "name": "Salaris & Overwerk",
+  "short_name": "Overwerk",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f4f6fa",
+  "theme_color": "#0b1220",
+  "lang": "nl-NL"
+}

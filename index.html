@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1220">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Salaris & Overwerk</title>
+<style>
+:root{
+ --bg:#f4f6fa;--surface:#fff;--ink:#101828;--muted:#667085;--line:#e4e7ec;
+ --brand:#0b1220;--brand2:#24344d;--green:#12b76a;--orange:#f79009;--red:#f04438;
+ --shadow:0 10px 28px rgba(16,24,40,.08)
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink)}
+button,input,select{font:inherit}
+button{cursor:pointer;border:0}
+.app{width:100%;max-width:520px;margin:auto;min-height:100vh;padding-bottom:92px}
+.topbar{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;padding:21px 18px 18px;border-radius:0 0 26px 26px}
+.toprow{display:flex;align-items:center;justify-content:space-between}
+.brand{font-size:21px;font-weight:850;letter-spacing:-.3px}
+.subtitle{font-size:12px;color:#c6ceda;margin-top:3px}
+.iconbtn{background:rgba(255,255,255,.11);color:#fff;width:40px;height:40px;border-radius:13px;font-size:19px}
+.monthpick{display:flex;gap:8px;align-items:center;margin-top:18px}
+.monthpick button{background:rgba(255,255,255,.1);color:#fff;width:34px;height:34px;border-radius:11px;font-size:20px}
+.monthlabel{font-weight:750;min-width:150px;text-align:center;text-transform:capitalize}
+.hero{margin-top:18px}
+.hero-label{color:#b8c3d2;font-size:12px}
+.hero-value{font-size:38px;font-weight:900;letter-spacing:-1px;margin-top:3px}
+.hero-sub{color:#b8c3d2;font-size:12px;margin-top:3px}
+main{padding:16px}
+.page{display:none}.page.active{display:block}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:15px;box-shadow:var(--shadow)}
+.kpi-label{font-size:11px;color:var(--muted)}
+.kpi{font-size:22px;font-weight:850;margin-top:7px}
+.kpi.green{color:var(--green)}
+.kpi.orange{color:var(--orange)}
+.section{font-size:16px;font-weight:850;margin:18px 2px 10px}
+.primary{background:var(--brand);color:#fff;border-radius:14px;padding:13px 16px;font-weight:800;width:100%}
+.secondary{background:#eef1f5;color:var(--ink);border-radius:14px;padding:13px 16px;font-weight:800;width:100%}
+.danger{background:#fff0ee;color:var(--red);border-radius:14px;padding:13px 16px;font-weight:800;width:100%}
+.formrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field{margin-bottom:12px}.field label{display:block;font-size:11px;font-weight:800;color:#475467;margin:0 0 6px}
+input,select{width:100%;padding:12px;border:1px solid #d0d5dd;border-radius:12px;background:#fff;color:var(--ink);outline:none}
+input:focus,select:focus{border-color:#667085}
+.preview{background:#0b1220;color:#fff;border-radius:16px;padding:15px;margin:4px 0 12px}
+.preview .muted{color:#aab5c4;font-size:11px}
+.preview .big{font-size:28px;font-weight:900;margin-top:3px}
+.preview .line{display:flex;justify-content:space-between;margin-top:7px;font-size:12px}
+.tag{display:inline-flex;align-items:center;background:#eef1f5;color:#344054;border-radius:999px;padding:5px 8px;font-size:10px;font-weight:850}
+.entry{padding:13px 0;border-bottom:1px solid var(--line)}
+.entry:last-child{border-bottom:0}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.small{font-size:11px;color:var(--muted);margin-top:3px}
+.right{text-align:right}
+.delete{background:#fff0ee;color:var(--red);padding:6px 9px;border-radius:9px;font-size:10px;font-weight:800;margin-top:8px}
+.chartbar{height:11px;border-radius:99px;background:#eef1f5;overflow:hidden}.chartfill{height:100%;background:#0b1220;border-radius:99px}
+.monthitem{padding:14px 0;border-bottom:1px solid var(--line)}.monthitem:last-child{border-bottom:0}
+.flex{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.note{font-size:11px;line-height:1.5;color:var(--muted);background:#f8fafc;border-radius:14px;padding:12px;margin-top:11px}
+.nav{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);width:min(496px,calc(100% - 20px));background:#0b1220;color:#fff;border-radius:20px;padding:7px;display:grid;grid-template-columns:repeat(4,1fr);gap:5px;box-shadow:0 16px 42px rgba(0,0,0,.24);z-index:30}
+.nav button{background:transparent;color:#98a2b3;border-radius:14px;padding:9px 3px;font-size:10px;font-weight:800}.nav button.active{background:#fff;color:#0b1220}
+.toast{position:fixed;top:14px;left:50%;transform:translate(-50%,-90px);background:#0b1220;color:#fff;padding:11px 15px;border-radius:12px;z-index:100;transition:.25s;font-size:12px;box-shadow:var(--shadow)}.toast.show{transform:translate(-50%,0)}
+.empty{padding:28px 8px;text-align:center;color:var(--muted);font-size:12px}
+.positive{color:var(--green)}.warning{color:var(--orange)}
+.details{margin-top:9px;font-size:11px;color:#475467;line-height:1.5}
+</style>
+</head>
+<body>
+<div id="toast" class="toast"></div>
+<div class="app">
+<header class="topbar">
+  <div class="toprow">
+    <div><div class="brand">Salaris & Overwerk</div><div class="subtitle">Persoonlijk overzicht</div></div>
+    <button class="iconbtn" onclick="go('settings')" aria-label="Instellingen">⚙</button>
+  </div>
+  <div class="monthpick">
+    <button onclick="changeMonth(-1)">‹</button>
+    <div id="monthLabel" class="monthlabel"></div>
+    <button onclick="changeMonth(1)">›</button>
+  </div>
+  <div class="hero">
+    <div class="hero-label">Verwacht netto deze maand</div>
+    <div class="hero-value" id="heroTotal">€ 3.800,00</div>
+    <div class="hero-sub" id="heroSub">€ 3.800,00 basis + € 0,00 overwerk</div>
+  </div>
+</header>
+
+<main>
+<section id="home" class="page active">
+  <div class="grid2">
+    <div class="card"><div class="kpi-label">Vast netto</div><div id="kBase" class="kpi">€ 3.800,00</div></div>
+    <div class="card"><div class="kpi-label">Overwerk netto</div><div id="kOtNet" class="kpi green">€ 0,00</div></div>
+    <div class="card"><div class="kpi-label">Overwerk bruto</div><div id="kOtGross" class="kpi">€ 0,00</div></div>
+    <div class="card"><div class="kpi-label">Overwerkuren</div><div id="kHours" class="kpi">0,00</div></div>
+  </div>
+
+  <div class="section">Deze maand</div>
+  <div class="card">
+    <div class="flex"><b>Verwacht totaal netto</b><strong id="monthTotal">€ 3.800,00</strong></div>
+    <div class="details" id="monthDetails">Nog geen overwerk ingevoerd.</div>
+  </div>
+
+  <div class="section">Snel toevoegen</div>
+  <button class="primary" onclick="go('add')">＋ Overwerk toevoegen</button>
+
+  <div class="section">Laatste invoer</div>
+  <div class="card" id="latest"></div>
+</section>
+
+<section id="add" class="page">
+  <div class="section">Overwerk invoeren</div>
+  <div class="card">
+    <div class="field"><label>Datum</label><input id="fDate" type="date"></div>
+    <div class="formrow">
+      <div class="field"><label>Uren</label><input id="fHours" type="number" min="0" step="0.25" placeholder="bijv. 4"></div>
+      <div class="field"><label>Percentage</label>
+        <select id="fRate"></select>
+      </div>
+    </div>
+    <div class="field"><label>Soort overwerk</label>
+      <select id="fType">
+        <option>Dagdienst</option><option>Avonddienst</option><option>Nachtdienst</option><option>Weekend</option><option>Feestdag</option><option>Anders</option>
+      </select>
+    </div>
+    <div class="field"><label>Opmerking</label><input id="fNote" maxlength="80" placeholder="optioneel"></div>
+
+    <div class="preview">
+      <div class="muted">Directe schatting</div>
+      <div id="pNet" class="big">€ 0,00 netto</div>
+      <div class="line"><span>Bruto overwerk</span><b id="pGross">€ 0,00</b></div>
+      <div class="line"><span>Netto % na inhoudingen</span><b id="pFactor">45,13%</b></div>
+    </div>
+    <button class="primary" onclick="saveEntry()">Opslaan</button>
+    <div style="height:8px"></div>
+    <button class="secondary" onclick="go('home')">Annuleren</button>
+  </div>
+  <div class="note">De netto-overwerkberekening gebruikt de ingestelde nettofactor per overwerkpercentage. De app vervangt geen officiële loonstrook.</div>
+</section>
+
+<section id="overview" class="page">
+  <div class="section">Maandoverzicht</div>
+  <div class="card" id="monthsList"></div>
+</section>
+
+<section id="settings" class="page">
+  <div class="section">Loon & instellingen</div>
+  <div class="card">
+    <div class="field"><label>Vast netto salaris per maand</label><input id="sBaseNet" type="number" step="0.01"></div>
+    <div class="field"><label>Bruto contractloon per maand</label><input id="sBaseGross" type="number" step="0.01"></div>
+    <div class="field"><label>Uurloon</label><input id="sHourly" type="number" step="0.01"></div>
+    <div class="field"><label>Schematoeslag %</label><input id="sShift" type="number" step="0.01"></div>
+    <div class="formrow">
+      <div class="field"><label>Bijzonder tarief %</label><input id="sTax" type="number" step="0.01"></div>
+      <div class="field"><label>Pensioen werknemer %</label><input id="sPension" type="number" step="0.01"></div>
+    </div>
+    <div class="field"><label>Standaard nettofactor overwerk %</label><input id="sOtFactor" type="number" step="0.01"></div>
+    <button class="primary" onclick="saveSettings()">Instellingen opslaan</button>
+  </div>
+
+  <div class="section">Overwerkpercentages</div>
+  <div class="card" id="rateEditor"></div>
+
+  <div class="section">Gegevens</div>
+  <div class="card">
+    <button class="secondary" onclick="exportData()">⬇ Exporteer back-up</button>
+    <div style="height:8px"></div>
+    <label class="secondary" style="display:block;text-align:center">⬆ Importeren<input id="importFile" type="file" accept=".json" style="display:none"></label>
+    <div style="height:8px"></div>
+    <button class="danger" onclick="clearAll()">Alles wissen</button>
+  </div>
+
+  <div class="note"><b>Overwerk-calibratie:</b> 12 uur × €26,68 × 200% = €640,32 bruto. Met jouw voorbeeld van ongeveer €325 netto is de factor voor 200% ingesteld op <b>50,75%</b>. Dit geeft €324,96 netto en €4.124,96 totaal bij €3.800 vast netto. Andere percentages gebruiken voorlopig dezelfde factor totdat je daar een voorbeeldbedrag van hebt. <br><br><b>Bron loonstrook augustus 2026:</b> contractloon €4.480,49, uurloon €26,68, schematoeslag 15,06%, brutoloon €5.167,75, nettoloon €3.687,98 en uitbetaling €3.806,43. Deze gegevens zijn als startwaarden in de app gezet.</div>
+</section>
+</main>
+
+<nav class="nav">
+  <button id="n-home" class="active" onclick="go('home')">⌂<br>Home</button>
+  <button id="n-add" onclick="go('add')">＋<br>Overwerk</button>
+  <button id="n-overview" onclick="go('overview')">▣<br>Maanden</button>
+  <button id="n-settings" onclick="go('settings')">⚙<br>Instellingen</button>
+</nav>
+
+<script>
+const KEY='salary_overtime_v3';
+const defaults={
+  baseNet:3800,
+  baseGross:4480.49,
+  hourly:26.68,
+  shift:15.06,
+  tax:50.47,
+  pension:4.40,
+  // Startwaarde gebaseerd op bijzonder tarief + pensioen: 100 - 50.47 - 4.40 = 45.13
+  otFactor:50.75,
+  rates:[110,125,130,150,175,200],
+  rateFactors:{110:50.75,125:50.75,130:50.75,150:50.75,175:50.75,200:50.75}
+};
+let db=JSON.parse(localStorage.getItem(KEY)||'null')||{settings:defaults,entries:[]};
+db.settings=Object.assign({},defaults,db.settings||{});
+if(!Array.isArray(db.settings.rates))db.settings.rates=defaults.rates;
+db.settings.rateFactors=Object.assign({},defaults.rateFactors,db.settings.rateFactors||{});
+
+let selectedMonth=(new Date()).toISOString().slice(0,7);
+
+function euro(n){return new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR'}).format(Number(n)||0)}
+function fnum(n,d=2){return (Number(n)||0).toFixed(d).replace('.',',')}
+function monthName(k){const [y,m]=k.split('-');return new Date(+y,+m-1,1).toLocaleDateString('nl-NL',{month:'long',year:'numeric'})}
+function mkey(date){return date.slice(0,7)}
+function saveDB(){localStorage.setItem(KEY,JSON.stringify(db))}
+function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1700)}
+function gross(e){return e.hours*db.settings.hourly*(e.rate/100)}
+function net(e){const factor=Number(db.settings.rateFactors[e.rate] ?? db.settings.otFactor);return gross(e)*(factor/100)}
+
+function go(page){
+ document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+ document.getElementById(page).classList.add('active');
+ document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));
+ const nav='n-'+page;if(document.getElementById(nav))document.getElementById(nav).classList.add('active');
+ if(page==='home')renderHome();
+ if(page==='add')prepareAdd();
+ if(page==='overview')renderMonths();
+ if(page==='settings')renderSettings();
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+function changeMonth(delta){
+ let [y,m]=selectedMonth.split('-').map(Number), d=new Date(y,m-1+delta,1);
+ selectedMonth=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+ renderAll();
+}
+function renderHeader(){
+ const es=db.entries.filter(e=>mkey(e.date)===selectedMonth);
+ const otNet=es.reduce((a,e)=>a+net(e),0), total=db.settings.baseNet+otNet;
+ document.getElementById('monthLabel').textContent=monthName(selectedMonth);
+ document.getElementById('heroTotal').textContent=euro(total);
+ document.getElementById('heroSub').textContent=`${euro(db.settings.baseNet)} basis + ${euro(otNet)} overwerk`;
+}
+function renderHome(){
+ renderHeader();
+ const es=db.entries.filter(e=>mkey(e.date)===selectedMonth);
+ const hours=es.reduce((a,e)=>a+Number(e.hours),0);
+ const grossTotal=es.reduce((a,e)=>a+gross(e),0);
+ const otNet=es.reduce((a,e)=>a+net(e),0);
+ const total=db.settings.baseNet+otNet;
+ kBase.textContent=euro(db.settings.baseNet);kOtNet.textContent=euro(otNet);kOtGross.textContent=euro(grossTotal);kHours.textContent=fnum(hours);
+ monthTotal.textContent=euro(total);
+ monthDetails.innerHTML=es.length?`${es.length} overwerkregel(s). Gemiddelde netto-opbrengst: <b>${euro(otNet/es.length)}</b> per regel.`:'Nog geen overwerk ingevoerd voor deze maand.';
+ const recent=[...db.entries].sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id).slice(0,6);
+ latest.innerHTML=recent.length?recent.map(e=>`
+ <div class="entry"><div class="row"><div><b>${e.date.split('-').reverse().join('-')}</b><div class="small">${e.type} • ${fnum(e.hours)} uur • ${e.rate}%</div></div>
+ <div class="right"><b class="positive">${euro(net(e))}</b><div class="small">${euro(gross(e))} bruto</div></div></div>
+ <button class="delete" onclick="removeEntry('${e.id}')">Verwijder</button></div>`).join(''):'<div class="empty">Nog geen overwerk opgeslagen.</div>';
+}
+function populateRates(){
+ fRate.innerHTML=db.settings.rates.map(r=>`<option value="${r}">${r}%</option>`).join('');
+}
+function prepareAdd(){
+ populateRates();
+ fDate.value ||= new Date().toISOString().slice(0,10);
+ if(!fRate.value)fRate.value=db.settings.rates[0];
+ updatePreview();
+}
+function updatePreview(){
+ const h=Number(fHours.value)||0,r=Number(fRate.value)||0,g=h*db.settings.hourly*(r/100),factor=Number(db.settings.rateFactors[r] ?? db.settings.otFactor),n=g*(factor/100);
+ pGross.textContent=euro(g);pNet.textContent=euro(n)+' netto';pFactor.textContent=fnum(factor,2)+'%';
+}
+function saveEntry(){
+ const date=fDate.value,h=Number(fHours.value),r=Number(fRate.value),type=fType.value,note=fNote.value.trim();
+ if(!date||!isFinite(h)||h<=0||!r){toast('Vul datum, uren en percentage in');return}
+ db.entries.push({id:String(Date.now()),date,hours:h,rate:r,type,note});
+ saveDB();selectedMonth=mkey(date);
+ fHours.value='';fNote.value='';
+ toast('Overwerk opgeslagen ✓');go('home');
+}
+function removeEntry(id){
+ db.entries=db.entries.filter(e=>e.id!==id);saveDB();renderAll();toast('Overwerk verwijderd');
+}
+function renderMonths(){
+ const groups={};db.entries.forEach(e=>{const k=mkey(e.date);(groups[k]??=[]).push(e)});
+ const keys=Object.keys(groups).sort().reverse();
+ monthsList.innerHTML=keys.length?keys.map(k=>{
+  const es=groups[k],h=es.reduce((a,e)=>a+e.hours,0),g=es.reduce((a,e)=>a+gross(e),0),n=es.reduce((a,e)=>a+net(e),0),t=db.settings.baseNet+n;
+  return `<div class="monthitem">
+   <div class="flex"><b style="text-transform:capitalize">${monthName(k)}</b><span class="tag">${fnum(h)} uur</span></div>
+   <div class="small" style="margin-top:7px">Overwerk bruto ${euro(g)} • overwerk netto <b class="positive">${euro(n)}</b></div>
+   <div class="small" style="margin-top:6px">Vast netto ${euro(db.settings.baseNet)} + overwerk ${euro(n)} = <b>${euro(t)}</b></div>
+   <div style="margin-top:8px" class="chartbar"><div class="chartfill" style="width:${Math.min(100,Math.max(5,(n/(db.settings.baseNet||1))*100*2))}%"></div></div>
+  </div>`;
+ }).join(''):'<div class="empty">Voeg je eerste overwerkregel toe.</div>';
+}
+function renderSettings(){
+ sBaseNet.value=db.settings.baseNet;sBaseGross.value=db.settings.baseGross;sHourly.value=db.settings.hourly;sShift.value=db.settings.shift;sTax.value=db.settings.tax;sPension.value=db.settings.pension;sOtFactor.value=db.settings.otFactor;
+ rateEditor.innerHTML=db.settings.rates.map((r,i)=>`
+ <div style="padding:10px 0;border-bottom:1px solid var(--line)">
+   <div class="flex"><b>${r}%</b><button class="delete" style="margin:0" onclick="removeRate(${i})">Verwijder</button></div>
+   <div class="small" style="margin:7px 0 5px">Nettofactor voor ${r}%</div>
+   <div style="display:flex;gap:8px">
+     <input id="rf_${r}" type="number" step="0.01" value="${Number(db.settings.rateFactors[r]??db.settings.otFactor).toFixed(2)}">
+     <button class="secondary" style="width:105px;padding:10px" onclick="saveRateFactor(${r})">Opslaan</button>
+   </div>
+ </div>`).join('')+`
+ <div style="display:flex;gap:8px;margin-top:12px"><input id="newRate" type="number" min="1" step="1" placeholder="bijv. 225"><button class="primary" style="width:110px" onclick="addRate()">Toevoegen</button></div>`;
+}
+function saveRateFactor(rate){
+ const v=Number(document.getElementById('rf_'+rate).value);
+ if(!isFinite(v)||v<=0||v>100){toast('Gebruik een factor tussen 0 en 100%');return}
+ db.settings.rateFactors[rate]=v;saveDB();renderSettings();toast(rate+'% nettofactor opgeslagen ✓');
+}
+function addRate(){
+ const r=Number(document.getElementById('newRate').value);if(!r||r<1){toast('Vul een geldig percentage in');return}
+ if(!db.settings.rates.includes(r)){db.settings.rates.push(r);db.settings.rateFactors[r]=db.settings.otFactor;}db.settings.rates.sort((a,b)=>a-b);saveDB();renderSettings();toast('Percentage toegevoegd');
+}
+function removeRate(i){if(db.settings.rates.length<=1){toast('Minimaal één percentage nodig');return}db.settings.rates.splice(i,1);saveDB();renderSettings()}
+function saveSettings(){
+ db.settings.baseNet=Number(sBaseNet.value)||3800;
+ db.settings.baseGross=Number(sBaseGross.value)||4480.49;
+ db.settings.hourly=Number(sHourly.value)||26.68;
+ db.settings.shift=Number(sShift.value)||15.06;
+ db.settings.tax=Number(sTax.value)||50.47;
+ db.settings.pension=Number(sPension.value)||4.4;
+ db.settings.otFactor=Number(sOtFactor.value)||50.75;
+ saveDB();toast('Instellingen opgeslagen ✓');renderAll();
+}
+function exportData(){
+ const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),a=document.createElement('a');
+ a.href=URL.createObjectURL(blob);a.download='salaris-overwerk-backup.json';a.click();URL.revokeObjectURL(a.href);toast('Back-up gedownload');
+}
+importFile.addEventListener('change',async ev=>{
+ const file=ev.target.files[0];if(!file)return;
+ try{const x=JSON.parse(await file.text());if(x.settings&&Array.isArray(x.entries)){db=x;db.settings=Object.assign({},defaults,db.settings);saveDB();renderAll();toast('Back-up geïmporteerd ✓')}else throw 0}catch(e){toast('Ongeldige back-up')}
+ ev.target.value='';
+});
+function clearAll(){if(confirm('Alle overuren en opgeslagen gegevens verwijderen?')){localStorage.removeItem(KEY);location.reload()}}
+fHours.addEventListener('input',updatePreview);fRate.addEventListener('change',updatePreview);
+if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{});}
+function renderAll(){renderHeader();renderHome();renderMonths();renderSettings();populateRates()}
+fDate.value=new Date().toISOString().slice(0,10);
+renderAll();
+</script>
+</body>
+</html>
